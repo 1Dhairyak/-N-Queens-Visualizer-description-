@@ -1,0 +1,202 @@
+:root {
+    --board-bg-light: #f0d9b5; /* Light square color */
+    --board-bg-dark: #b58863;  /* Dark square color */
+    --queen-color: #1a1a1a;
+    --placing-glow: rgba(40, 167, 69, 0.7); /* Green */
+    --backtrack-glow: rgba(220, 53, 69, 0.7); /* Red */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: #2c2f33; /* Dark background */
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+h1 {
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 24px;
+}
+
+/* --- Controls --- */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    background-color: #3a3e42;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.control-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #b0b8bf;
+}
+
+.control-group input[type="number"],
+.control-group input[type="range"] {
+    font-family: var(--font-family);
+    border-radius: 6px;
+    border: 1px solid #555;
+    background-color: #2c2f33;
+    color: #fff;
+    padding: 8px;
+    max-width: 80px;
+    text-align: center;
+}
+
+.control-group input[type="range"] {
+    padding: 0;
+    max-width: 150px;
+    cursor: pointer;
+}
+
+button {
+    font-family: var(--font-family);
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    background-color: #5865f2; /* A nice tech-blue */
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    background-color: #4a54c9;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button#resetButton {
+    background-color: #aa2e25;
+}
+
+button#resetButton:hover {
+    background-color: #8c261e;
+}
+
+button:disabled {
+    background-color: #555;
+    color: #999;
+    cursor: not-allowed;
+}
+
+/* --- Status Message --- */
+#status-message {
+    min-height: 1.5em;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: #e0e0e0;
+}
+
+/* --- Chessboard --- */
+#chessboard {
+    display: grid;
+    /* --n is set by JS */
+    grid-template-columns: repeat(var(--n, 8), 1fr);
+    border: 4px solid #4a4e52;
+    background-color: #4a4e52;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    max-width: 90vw;
+    max-height: 90vh;
+    /* Maintain aspect ratio */
+    width: 600px;
+    height: 600px;
+    /* Responsive resizing */
+    aspect-ratio: 1 / 1;
+}
+
+@media (max-width: 700px) {
+    #chessboard {
+        width: 90vw;
+        height: 90vw;
+    }
+}
+
+.cell {
+    position: relative;
+    width: 100%;
+    /* padding-bottom: 100%; forces 1:1 aspect ratio */
+    aspect-ratio: 1 / 1; 
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Box-shadow transition for smooth glows */
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.cell.light {
+    background-color: var(--board-bg-light);
+}
+
+.cell.dark {
+    background-color: var(--board-bg-dark);
+}
+
+/* --- Queen and Visualization Styles --- */
+
+/* The Queen '♕' */
+.cell.queen::before {
+    content: '♕';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    /* Responsive font size */
+    font-size: calc(450px / var(--n, 8));
+    line-height: 1;
+    
+    color: var(--queen-color);
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.7);
+    z-index: 5;
+    
+    /* Fade-in animation */
+    animation: fadeIn 0.3s ease;
+}
+
+/* Green glow for "placing/testing" */
+.cell.placing {
+    box-shadow: inset 0 0 12px 6px var(--placing-glow);
+    z-index: 10;
+}
+
+/* Red glow for "backtracking/unsafe" */
+.cell.backtracking {
+    box-shadow: inset 0 0 12px 6px var(--backtrack-glow);
+    z-index: 10;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
